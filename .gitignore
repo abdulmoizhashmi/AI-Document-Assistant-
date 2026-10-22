@@ -1,5 +1,4 @@
-# Environment & Secrets (NEVER COMMIT)
-.env
+# Environment & Secrets
 .env.*
 !.env.example
 .streamlit/secrets.toml
