@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import json
-import os
 from typing import Any, Generator
 import requests
 from dotenv import load_dotenv
 from langchain_core.documents import Document
+
+from src.settings import get_setting
 
 load_dotenv()
 
@@ -18,18 +19,18 @@ def _get_provider_list(
     preferred_provider: str | None = None,
     model_override: str | None = None,
 ) -> list[tuple[str, str, str, str]]:
-    groq_key = os.getenv("GROQ_API_KEY", "").strip()
-    openrouter_key = os.getenv("OPENROUTER_API_KEY", "").strip()
+    groq_key = get_setting("GROQ_API_KEY")
+    openrouter_key = get_setting("OPENROUTER_API_KEY")
 
     groq_model = (
         model_override
         if (preferred_provider == "Groq" and model_override)
-        else os.getenv("GROQ_MODEL", "openai/gpt-oss-120b").strip()
+        else get_setting("GROQ_MODEL", "openai/gpt-oss-120b")
     )
     openrouter_model = (
         model_override
         if (preferred_provider == "OpenRouter" and model_override)
-        else os.getenv("OPENROUTER_MODEL", "openrouter/free").strip()
+        else get_setting("OPENROUTER_MODEL", "openrouter/free")
     )
 
     groq_tuple = ("Groq", "https://api.groq.com/openai/v1", groq_key, groq_model)
@@ -105,7 +106,8 @@ def generate_answer_stream(
     providers = _get_provider_list(preferred_provider, model_override)
     if not providers:
         raise LLMUnavailableError(
-            "No LLM API key is configured. Add GROQ_API_KEY or OPENROUTER_API_KEY to your .env file, then restart Streamlit."
+            "No LLM API key is configured. Add GROQ_API_KEY or OPENROUTER_API_KEY "
+            "to .env locally or Streamlit Settings → Secrets when hosted."
         )
 
     failures = []

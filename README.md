@@ -2,6 +2,21 @@
 
 A local Streamlit application for uploading PDFs, indexing their text with embeddings in ChromaDB, retrieving relevant passages, reranking them, and answering questions with page citations.
 
+## Try it online
+
+The [GitHub Pages project site](https://abdulmoizhashmi.github.io/AI-Document-Assistant-/) describes the app and links to its deployment flow. GitHub Pages only hosts static files; the PDF upload, indexing, and AI chat run in the Python Streamlit app.
+
+To host a working instance:
+1. Open [the Streamlit deployment page for this repository](https://share.streamlit.io/deploy?repository=abdulmoizhashmi%2FAI-Document-Assistant-&branch=main&mainModule=app.py) and sign in to Streamlit Community Cloud.
+2. Select the `main` branch and `app.py` as the app's main file, then deploy.
+3. In the deployed app's **Settings → Secrets**, add at least one provider key:
+   ```toml
+   GROQ_API_KEY = "your-groq-api-key"
+   # Or:
+   OPENROUTER_API_KEY = "your-openrouter-api-key"
+   ```
+4. Save the secrets and let Streamlit restart the app. Keep provider keys in Streamlit Secrets; never commit them to GitHub.
+
 ## Features
 - Multiple PDF upload
 - PDF text extraction with page metadata

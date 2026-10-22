@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import re
 import sys
 import time
@@ -17,6 +16,7 @@ from src.document_loader import load_and_split_pdfs
 from src.vector_store import create_or_get_vector_store
 from src.retriever import retrieve_and_rerank
 from src.answer_generator import generate_answer_stream, LLMUnavailableError
+from src.settings import get_setting
 
 # Page setup
 st.set_page_config(
@@ -40,8 +40,8 @@ if "chunk_count" not in st.session_state:
 if "theme" not in st.session_state:
     st.session_state["theme"] = "dark"
 
-groq_ready = bool(os.getenv("GROQ_API_KEY", "").strip())
-openrouter_ready = bool(os.getenv("OPENROUTER_API_KEY", "").strip())
+groq_ready = bool(get_setting("GROQ_API_KEY"))
+openrouter_ready = bool(get_setting("OPENROUTER_API_KEY"))
 
 # Theme Toggle in Sidebar
 with st.sidebar:
@@ -64,7 +64,10 @@ with st.sidebar:
         provider_options.append("OpenRouter")
 
     if not provider_options:
-        st.error("No API key found in `.env`. Please add `GROQ_API_KEY` or `OPENROUTER_API_KEY`.")
+        st.error(
+            "No API key found. Add `GROQ_API_KEY` or `OPENROUTER_API_KEY` "
+            "to `.env` locally or Streamlit Settings → Secrets when hosted."
+        )
         selected_provider = "Groq"
     else:
         chosen_provider = st.selectbox(
@@ -85,7 +88,7 @@ with st.sidebar:
         )
         active_model = groq_model
     else:
-        active_model = os.getenv("OPENROUTER_MODEL", "openrouter/free").strip()
+        active_model = get_setting("OPENROUTER_MODEL", "openrouter/free")
         st.text(f"Model: {active_model}")
 
     st.markdown("---")
@@ -608,5 +611,3 @@ if st.session_state["vector_store"] is not None:
                 st.error(f"Error generating answer: {exc}")
 else:
     st.info("👆 Upload one or more text-based PDF files above to start asking questions.")
-
-
